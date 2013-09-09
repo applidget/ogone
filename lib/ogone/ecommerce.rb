@@ -3,8 +3,6 @@ require 'digest/sha2'
 
 module Ogone
   class Ecommerce
-    include ActionView::Helpers::FormTagHelper  # Need hidden_field_tag
-
     VALID_ENVIRONMENTS = %w(test prod) unless const_defined? :VALID_ENVIRONMENTS
     SIGNING_ALGORITHMS = %w(SHA1 SHA256 SHA512) unless const_defined? :SIGNING_ALGORITHMS
 
@@ -101,20 +99,22 @@ module Ogone
 
     def sha_in_sign
       to_hash = sorted_upcased_parameters.inject([]) {
-                  |a, (k, v)| a << "#{k}=#{v}#{@sha_in}" unless v.blank?; a
+                  |a, (k, v)| a << "#{k}=#{v}#{@sha_in}" unless v.nil? || v == ""
+                  a
                 }.join
-      hash to_hash
+      sign to_hash
     end
 
     def sha_out_sign(params)
       to_hash = OUTBOUND_SIGNATURE_PARAMETERS.inject([]) {
-                  |a, p| a << "#{p}=#{params[p]}#{@sha_out}" unless params[p].blank?; a
+                  |a, p| a << "#{p}=#{params[p]}#{@sha_out}" unless params[p].nil? || v == ""
+                  a
                 }.join
-      hash to_hash
+      sign to_hash
     end
 
-    def hash(to_hash)
-      "Digest::#{@sha_algo}".constantize.hexdigest(to_hash).upcase
+    def sign(to_hash)
+      Digest.const_get(@sha_algo).hexdigest(to_hash).upcase
     end
 
     def sorted_upcased_parameters
@@ -130,6 +130,14 @@ module Ogone
         unless @parameters.include? parameter.to_sym
           raise MandatoryParameterMissing.new parameter
         end
+      end
+    end
+
+    def hidden_field_tag(name, value)
+      if defined?(ActionView)
+        ActionView::Helpers::FormTagHelper.hidden_field_tag(name, value)
+      else
+        "<input type=\"hidden\" name=\"#{name}\" value=\"#{value} />"
       end
     end
 
