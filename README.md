@@ -34,6 +34,21 @@ class PaymentController
                                   :sha_in => "......",  # Configured in your back-office
                                   :sha_out => "....."   # Configured in your back-office
 
+    # Add mandatory parameters. Alternatively can be passed directly in `@ogone.fields_for_payment`
+    @ogone.add_parameters {
+      :CURRENCY => "EUR",
+      :AMOUNT => 2000,  # Beware, that would be 20 EUR
+      :ORDERID => "...",
+      :LANGUAGE => "en_US"
+      # And many more parameters, refer to the Ogone documentation
+    }
+
+    # Configure where the user should be redirected once the payment is completed
+    # This sets the following urls:
+    #  - ACCEPTURL
+    #  - DECLINEURL
+    #  - EXCEPTIONURL
+    #  - CANCELURL
     @ogone.add_single_return_url "http://your_application/route/to/ogone/return"
   end
 end
@@ -51,7 +66,32 @@ Then in your view, you can quickly get the form up and running:
 
   <%= submit_tag "Pay" %>
 <% end %>
+```
 
+When clicking on the `Pay` button, your user will be redirected to the Ogone
+Ecommerce platform to enter his/her credit card info and pay. When the payment
+is completed, the user will be redirected to your application.
+
+This will be done via a `POST` request from Ogone to your app. This request contains
+parameters that Ogone gives to you so that you can update your own database. Before
+doing anything, you should check that the request signature is correct to make sure
+it comes from Ogone. To do so, just call:
+
+```ruby
+require "ogone"
+
+class PaymentController
+  def ogone_return
+    @ogone = Ogone::Ecommerce.new :sha_algo => "SHA1", :sha_out => "...."
+
+    begin
+      @ogone.check_shasign_out! params
+      # TODO: update database with payment info.
+    rescue Ogone::Ecommerce::OutboundSignatureMismatch
+      # The request did not come from Ogone, or there is a misconfiguration of sha_out.
+    end
+  end
+end
 ```
 
 ## Contributing
