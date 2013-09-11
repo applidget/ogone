@@ -72,7 +72,11 @@ class PaymentController
 
     begin
       @ogone.check_shasign_out! params
-      # TODO: update database with payment info.
+
+      status = params[:STATUS].to_i
+      if Ogone::PAID_STATUSES.include? status
+        # TODO: update database with payment info.
+      end
     rescue Ogone::Ecommerce::OutboundSignatureMismatch
       # The request did not come from Ogone, or there is a misconfiguration of sha_out.
     end
