@@ -1,10 +1,9 @@
-require 'digest/sha1'
-require 'digest/sha2'
-
 module Ogone
   class Ecommerce
     VALID_ENVIRONMENTS = %w(test prod) unless const_defined? :VALID_ENVIRONMENTS
     SIGNING_ALGORITHMS = %w(SHA1 SHA256 SHA512) unless const_defined? :SIGNING_ALGORITHMS
+
+    class ConfigurationError < StandardError; end
 
     MANDATORY_PARAMETERS = %w(PSPID ORDERID AMOUNT CURRENCY LANGUAGE) unless const_defined? :MANDATORY_PARAMETERS
     class MandatoryParameterMissing < StandardError; end
@@ -21,21 +20,10 @@ module Ogone
 
     attr_accessor :sha_in, :sha_out
 
-    def initialize(options)
+    def initialize(options = {})
       @parameters = Hash.new
-      [:sha_algo, :environment, :pspid].each do |config|
-        self.send :"#{config}=", options[config]
-      end
-    end
-
-    def add_parameters(parameters)
-      parameters.each do |key, value|
-        method = key.to_s.downcase.to_sym
-        if self.respond_to? method
-          self.send :"#{method}=", value
-        else
-          @parameters[key] = value
-        end
+      [:sha_algo, :environment, :pspid, :sha_in, :sha_out].each do |config|
+        self.send :"#{config}=", options[config] unless options[config].nil?
       end
     end
 
@@ -58,11 +46,10 @@ module Ogone
       @parameters[:PSPID] = pspid
     end
 
-    def amount=(amount)
-      @parameters[:AMOUNT] = (amount * 100).round  # Need to pass the price in cents
-    end
-
     def form_action
+      unless VALID_ENVIRONMENTS.include? @environment.to_s
+        raise ConfigurationError.new("Unsupported Ogone environment: '#{@environment}'.")
+      end
       "https://secure.ogone.com/ncol/#{@environment}/orderstandard_utf8.asp"
     end
 
@@ -72,22 +59,15 @@ module Ogone
       end
     end
 
-    def hidden_fields
+    def add_parameters(parameters)
+      @parameters.merge! parameters
+    end
+
+    def fields_for_payment(parameters = {})
+      add_parameters(parameters || {})
       check_mandatory_parameters!
 
-      fields = []
-      sorted_upcased_parameters.each do |key, value|
-        fields << hidden_field_tag(key, value)
-      end
-      fields << hidden_field_tag(:SHASIGN, sha_in_sign)
-
-      # Fields not to be included in the sha signature
-      fields << hidden_field_tag(:HOME, "NONE")  # No 'Back to merchant store' button
-      # TODO(ssaunier):
-      # - CATALOGURL
-      # - BACKURL
-
-      fields
+      upcase_keys(@parameters).merge :SHASIGN => sha_in_sign
     end
 
     def check_shasign_out!(params)
@@ -114,6 +94,9 @@ module Ogone
     end
 
     def sign(to_hash)
+      unless SIGNING_ALGORITHMS.include?(@sha_algo)
+        raise ArgumentError.new("Unsupported signature algorithm: '#{@sha_algo}'")
+      end
       Digest.const_get(@sha_algo).hexdigest(to_hash).upcase
     end
 
@@ -130,14 +113,6 @@ module Ogone
         unless @parameters.include? parameter.to_sym
           raise MandatoryParameterMissing.new parameter
         end
-      end
-    end
-
-    def hidden_field_tag(name, value)
-      if defined?(ActionView)
-        ActionView::Helpers::FormTagHelper.hidden_field_tag(name, value)
-      else
-        "<input type=\"hidden\" name=\"#{name}\" value=\"#{value} />"
       end
     end
 
