@@ -91,7 +91,7 @@ module Ogone
 
     def sha_out_sign(params)
       to_hash = OUTBOUND_SIGNATURE_PARAMETERS.inject([]) {
-                  |a, p| a << "#{p}=#{params[p]}#{@sha_out}" unless params[p].nil? || v == ""
+                  |a, p| a << "#{p}=#{params[p]}#{@sha_out}" unless params[p].nil? || params[p] == ""
                   a
                 }.join
       sign to_hash
