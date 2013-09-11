@@ -35,7 +35,7 @@ module Ogone
     94 => 'Refund declined by the acquirer',
     95 => 'Payment processed by merchant',
     99 => 'Being processed'
-  } unless const_defined? :STATUS_MAPPING
+  } unless const_defined? :STATUS
 
   PAID_STATUSES = [4, 5, 9] unless const_defined? :PAID_STATUSES
   PENDING_STATUSES = [41, 51, 52, 91, 92, 99] unless const_defined? :PENDING_STATUSES
