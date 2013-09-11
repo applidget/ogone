@@ -5,20 +5,6 @@ your users to the ogone ecommerce form where they can pay. This gem is flexible
 as it does not rely on a hard-coded configuration to be used. Therefore you can
 dynamically handle several PSPIDs.
 
-## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'ogone'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install ogone
-
 ## Usage
 
 In your controller,
