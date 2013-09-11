@@ -1,5 +1,3 @@
 require "ogone/version"
-
-module Ogone
-  # Your code goes here...
-end
+require "ogone/status"
+require "ogone/ecommerce"
