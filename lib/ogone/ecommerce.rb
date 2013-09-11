@@ -75,6 +75,10 @@ module Ogone
       raise OutboundSignatureMismatch.new if sha_out_sign(params) != params[:SHASIGN]
     end
 
+    def upcase_keys(hash)
+      hash.inject({}) { |h, (k, v)| h[k.upcase.to_sym] = v; h }
+    end
+
     private
 
     def sha_in_sign
@@ -102,10 +106,6 @@ module Ogone
 
     def sorted_upcased_parameters
       upcase_keys(@parameters).sort
-    end
-
-    def upcase_keys(hash)
-      hash.inject({}) { |h, (k, v)| h[k.upcase.to_sym] = v; h }
     end
 
     def check_mandatory_parameters!
