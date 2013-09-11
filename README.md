@@ -46,7 +46,7 @@ Then in your view, you can quickly get the form up and running:
 <%# ogone_form.html.erb %>
 
 <%= form_tag @ogone.form_action, :method => :post %>
-  <% @ogone.fields_for_payment do |name, value| %>
+  <% @ogone.fields_for_payment.each do |name, value| %>
     <%= hidden_field_tag name, value %>
   <% end %>
 
