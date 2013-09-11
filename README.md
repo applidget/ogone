@@ -21,13 +21,13 @@ class PaymentController
                                   :sha_out => "....."   # Configured in your back-office
 
     # Add mandatory parameters. Alternatively can be passed directly in `@ogone.fields_for_payment`
-    @ogone.add_parameters {
+    @ogone.add_parameters(
       :CURRENCY => "EUR",
       :AMOUNT => 2000,  # Beware, that would be 20 EUR
       :ORDERID => "...",
       :LANGUAGE => "en_US"
       # And many more parameters, refer to the Ogone documentation
-    }
+    )
 
     # Configure where the user should be redirected once the payment is completed
     # This sets the following urls:
