@@ -1,3 +1,5 @@
+require 'digest'
+
 module Ogone
   class Base
     VALID_ENVIRONMENTS = %w(test prod) unless const_defined? :VALID_ENVIRONMENTS
@@ -99,9 +101,9 @@ module Ogone
     end
 
     def check_mandatory_parameters!
-      simbolysed_parameters = @parameters.symbolize_keys
+      keys = @parameters.keys.map(&:to_sym)
       mandatory_parameters.each do |parameter|
-        unless simbolysed_parameters.include? parameter.to_sym
+        unless keys.include? parameter.to_sym
           raise MandatoryParameterMissing.new parameter
         end
       end
