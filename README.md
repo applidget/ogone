@@ -98,10 +98,10 @@ end
   'LANGUAGE' => 'en_US',
 )
 
-@ogone.form_url # this is the URL with the Flexcheckout form
+@ogone.form_url # this is the URL with the Flexcheckout form, you shoudl redirect_to it
 ```
 
-Once the form filled ogone will redirect to your `ACCEPTURL` or `EXCEPTIONURL`. If you hit the `ACCEPTURL`,
+Once you fill the form, Ogone will redirect to the `ACCEPTURL` or `EXCEPTIONURL`. If you go to the `ACCEPTURL`,
 you can proceed with the order :
 
 ```ruby
