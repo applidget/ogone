@@ -1,0 +1,12 @@
+Metrics/LineLength:
+  Max: 120
+Metrics/BlockLength:
+  CountComments: false
+  Max: 25
+  Exclude:
+    - 'Rakefile'
+    - 'spec/**/*.rb'
+Documentation:
+  Enabled: false
+Style/Lambda:
+  Enabled: false
