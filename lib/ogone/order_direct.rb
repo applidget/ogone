@@ -2,9 +2,16 @@ require 'ogone/base'
 
 module Ogone
   class OrderDirect < Base
-    def mandatory_parameters
-      %w(PSPID ORDERID AMOUNT CURRENCY ALIAS USERID PSWD OPERATION)
-    end
+    MANDATORY_PARAMETERS = %w[
+      PSPID
+      ORDERID
+      AMOUNT
+      CURRENCY
+      ALIAS
+      USERID
+      PSWD
+      OPERATION
+    ].freeze
 
     def pspid=(pspid)
       super(pspid)
