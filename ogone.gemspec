@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ogone/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'ogone2'
+  spec.name          = 'ogone'
   spec.version       = Ogone::VERSION
   spec.authors       = ['Sebastien Saunier']
   spec.email         = ['seb@saunier.me']

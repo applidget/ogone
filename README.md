@@ -88,8 +88,6 @@ end
 
 ## Flexcheckout and direct order
 
-To get these features please use the `ogone2`.
-
 ```ruby
 @ogone = Ogone::Flexcheckout.new opts # same options than Ogone::Ecommerce
 
