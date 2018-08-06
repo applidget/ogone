@@ -1,3 +1,5 @@
-require "ogone/version"
-require "ogone/status"
-require "ogone/ecommerce"
+require 'ogone/version'
+require 'ogone/status'
+require 'ogone/ecommerce'
+require 'ogone/flexcheckout'
+require 'ogone/order_direct'

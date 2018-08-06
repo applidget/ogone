@@ -5,6 +5,8 @@ your users to the ogone ecommerce form where they can pay. This gem is flexible
 as it does not rely on a hard-coded configuration to be used. Therefore you can
 dynamically handle several PSPIDs.
 
+You can also use Flexcheckout combined with direct order (see Flexcheckout and direct order).
+
 ## Usage
 
 In your controller,
@@ -82,6 +84,50 @@ class PaymentController
     end
   end
 end
+```
+
+## Flexcheckout and direct order
+
+To get these features please use the `ogone2`.
+
+```ruby
+@ogone = Ogone::Flexcheckout.new opts # same options than Ogone::Ecommerce
+
+@ogone.add_parameters(
+  'CARD.PAYMENTMETHOD' => 'CreditCard',
+  'PARAMETERS.ACCEPTURL' => 'http://my_app/ogone_flexcheckout_success',
+  'PARAMETERS.EXCEPTIONURL' => 'http://my_app/ogone_flexcheckout_failure',
+  'LANGUAGE' => 'en_US',
+)
+
+@ogone.form_url # this is the URL with the Flexcheckout form, you shoudl redirect_to it
+```
+
+Once you fill the form, Ogone will redirect to the `ACCEPTURL` or `EXCEPTIONURL`. If you go to the `ACCEPTURL`,
+you can proceed with the order :
+
+```ruby
+# first ensure sha_out matches
+@ogone = Ogone::Flexcheckout.new opts # same options than Ogone::Ecommerce
+@ogone.check_shasign_out!(params)
+
+# ok sha_out matches proceed to the order
+@ogone = Ogone::OrderDirect.new opts # same options than Ogone::Ecommerce
+
+@ogone.add_parameters(
+  'ORDERID' => params['Alias.OrderId'],
+  'AMOUNT' => 10 * 100,
+  'CURRENCY' => 'EUR',
+  'ALIAS' => params['Alias.AliasId'], # comes from the HTTP params set in the flexcheckout redirect
+  'USERID' => 'my_api_user', # you need to have an API user https://payment-services.ingenico.com/int/en/ogone/support/guides/integration%20guides/directlink
+  'PSWD' => 'super_secret@',
+  'OPERATION' => 'RES'
+  # extra parameters may be set for 3D Secure : https://payment-services.ingenico.com/int/en/ogone/support/guides/integration%20guides/directlink-3-d/3-d-transaction-flow-via-directlink#comments
+)
+
+result = @ogone.perform_order
+
+# handle result
 ```
 
 ## Contributing
