@@ -6,6 +6,7 @@ module Ogone
       2  => 'Authorization refused',
       4  => 'Order stored',
       41 => 'Waiting client payment',
+      46 => 'Require 3D secure',
       5  => 'Authorized',
       51 => 'Authorization waiting',
       52 => 'Authorization not known',
@@ -42,4 +43,5 @@ module Ogone
   PENDING_STATUSES = [41, 51, 52, 91, 92, 99].freeze unless const_defined? :PENDING_STATUSES
   CANCELLED_STATUSES = [1].freeze unless const_defined? :CANCELLED_STATUSES
   REFUNDED_STATUSES = [8].freeze unless const_defined? :REFUNDED_STATUSES
+  REQUIRES_3D_SECURE_STATUSES = [46].freeze unless const_defined? :REQUIRES_3D_SECURE_STATUSES
 end
