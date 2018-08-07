@@ -65,11 +65,5 @@ module Ogone
       end
       "https://secure.ogone.com/ncol/#{@environment}/orderstandard_utf8.asp"
     end
-
-    def add_single_return_url(return_url)
-      %i[ACCEPTURL DECLINEURL EXCEPTIONURL CANCELURL].each do |field|
-        @parameters[field] = return_url
-      end
-    end
   end
 end

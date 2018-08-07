@@ -55,6 +55,12 @@ module Ogone
       hash.each_with_object({}) { |(k, v), h| h[k.upcase.to_sym] = v; }
     end
 
+    def add_single_return_url(return_url)
+      %i[ACCEPTURL DECLINEURL EXCEPTIONURL CANCELURL].each do |field|
+        @parameters[field] = return_url
+      end
+    end
+
     protected
 
     def ogone_host
